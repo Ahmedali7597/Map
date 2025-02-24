@@ -117,4 +117,33 @@ function initMap() {
     document.getElementById("btn-attraction").addEventListener("click", () => {
       filterMarkers("Attraction");
     });
-  
+    // Geolocation: Find and mark the user's current location.
+    document.getElementById("btn-geolocate").addEventListener("click", () => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const pos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+              };
+              // Remove previous user marker if it exists.
+              if (userMarker) {
+                userMarker.setMap(null);
+              }
+              userMarker = new google.maps.Marker({
+                position: pos,
+                map: map,
+                title: "Your Location",
+                icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+              });
+              map.setCenter(pos);
+            },
+            () => {
+              handleLocationError(true, map.getCenter());
+            }
+          );
+        } else {
+          // Browser doesn't support Geolocation.
+          handleLocationError(false, map.getCenter());
+        }
+      });
