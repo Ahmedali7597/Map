@@ -84,7 +84,7 @@ function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 43.2557, lng: -79.8711 },
     zoom: 13,
-    mapId: "YOUR_VALID_MAP_ID" // OPTIONAL: Remove or replace with a valid Map ID if desired.
+    mapId: "YOUR_VALID_MAP_ID"
   });
   infoWindow = new google.maps.InfoWindow();
 
@@ -179,9 +179,9 @@ function initMap() {
       alert("Please select a destination.");
       return;
     }
-    const destination = markers[destIndex].getPosition();
+    const destination = markers[destIndex].position;
     const request = {
-      origin: userMarker.getPosition(),
+      origin: userMarker.position,
       destination: destination,
       travelMode: "DRIVING"
     };
@@ -246,9 +246,9 @@ function getDirections(markerIndex) {
     alert("Please set your location first using the 'Find My Location' button.");
     return;
   }
-  const destination = markers[markerIndex].getPosition();
+  const destination = markers[markerIndex].position;
   const request = {
-    origin: userMarker.getPosition(),
+    origin: userMarker.position,
     destination: destination,
     travelMode: "DRIVING"
   };
