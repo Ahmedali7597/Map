@@ -78,3 +78,43 @@ const locations = [
     position: { lat: 43.2590, lng: -79.8740 }
   }
 ];
+
+function initMap() {
+    // Initialize the map centered on Hamilton.
+    map = new google.maps.Map(document.getElementById("map"), {
+      center: { lat: 43.2557, lng: -79.8711 },
+      zoom: 13
+    });
+    infoWindow = new google.maps.InfoWindow();
+  
+    // Initialize directions services.
+    directionsService = new google.maps.DirectionsService();
+    directionsRenderer = new google.maps.DirectionsRenderer();
+    directionsRenderer.setMap(map);
+    directionsRenderer.setPanel(document.getElementById("directions-panel"));
+  
+    // Add sample markers.
+    locations.forEach(location => {
+      addMarker(location);
+    });
+  
+    // Populate the destination dropdown.
+    populateDestinationDropdown();
+  
+    // Set up filtering buttons.
+    document.getElementById("btn-all").addEventListener("click", () => {
+      filterMarkers("All");
+    });
+    document.getElementById("btn-park").addEventListener("click", () => {
+      filterMarkers("Park");
+    });
+    document.getElementById("btn-museum").addEventListener("click", () => {
+      filterMarkers("Museum");
+    });
+    document.getElementById("btn-historic").addEventListener("click", () => {
+      filterMarkers("Historic");
+    });
+    document.getElementById("btn-attraction").addEventListener("click", () => {
+      filterMarkers("Attraction");
+    });
+  
