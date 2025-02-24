@@ -80,81 +80,74 @@ const locations = [
 ];
 
 function initMap() {
-    // Initialize the map centered on Hamilton.
-    map = new google.maps.Map(document.getElementById("map"), {
-      center: { lat: 43.2557, lng: -79.8711 },
-      zoom: 13
-    });
-    infoWindow = new google.maps.InfoWindow();
-  
-    // Initialize directions services.
-    directionsService = new google.maps.DirectionsService();
-    directionsRenderer = new google.maps.DirectionsRenderer();
-    directionsRenderer.setMap(map);
-    directionsRenderer.setPanel(document.getElementById("directions-panel"));
-  
-    // Add sample markers.
-    locations.forEach(location => {
-      addMarker(location);
-    });
-  
-    // Populate the destination dropdown.
-    populateDestinationDropdown();
-  
-    // Set up filtering buttons.
-    document.getElementById("btn-all").addEventListener("click", () => {
-      filterMarkers("All");
-    });
-    document.getElementById("btn-park").addEventListener("click", () => {
-      filterMarkers("Park");
-    });
-    document.getElementById("btn-museum").addEventListener("click", () => {
-      filterMarkers("Museum");
-    });
-    document.getElementById("btn-historic").addEventListener("click", () => {
-      filterMarkers("Historic");
-    });
-    document.getElementById("btn-attraction").addEventListener("click", () => {
-      filterMarkers("Attraction");
-    });
-    // Geolocation: Find and mark the user's current location.
-    document.getElementById("btn-geolocate").addEventListener("click", () => {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              const pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-              };
-              // Remove previous user marker if it exists.
-              if (userMarker) {
-                userMarker.setMap(null);
-              }
-              userMarker = new google.maps.marker.AdvancedMarkerElement({
-                position: pos,
-                map: map,
-                title: "Your Location",
-                icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
-              });
-              map.setCenter(pos);
-            },
-            () => {
-              handleLocationError(true, map.getCenter());
-            }
-          );
-        } else {
-          // Browser doesn't support Geolocation.
-          handleLocationError(false, map.getCenter());
-        }
-      });
-      // Form to add new marker.
+  // Initialize the map. Replace 'YOUR_VALID_MAP_ID' with an actual Map ID from your Google Cloud Console.
+  map = new google.maps.Map(document.getElementById("map"), {
+    center: { lat: 43.2557, lng: -79.8711 },
+    zoom: 13,
+    mapId: "YOUR_VALID_MAP_ID" // OPTIONAL: Remove or replace with a valid Map ID if desired.
+  });
+  infoWindow = new google.maps.InfoWindow();
+
+  // Initialize directions services.
+  directionsService = new google.maps.DirectionsService();
+  directionsRenderer = new google.maps.DirectionsRenderer();
+  directionsRenderer.setMap(map);
+  directionsRenderer.setPanel(document.getElementById("directions-panel"));
+
+  // Add sample markers.
+  locations.forEach(location => {
+    addMarker(location);
+  });
+
+  // Populate the destination dropdown.
+  populateDestinationDropdown();
+
+  // Set up filtering buttons.
+  document.getElementById("btn-all").addEventListener("click", () => filterMarkers("All"));
+  document.getElementById("btn-park").addEventListener("click", () => filterMarkers("Park"));
+  document.getElementById("btn-museum").addEventListener("click", () => filterMarkers("Museum"));
+  document.getElementById("btn-historic").addEventListener("click", () => filterMarkers("Historic"));
+  document.getElementById("btn-attraction").addEventListener("click", () => filterMarkers("Attraction"));
+
+  // Geolocation: Find and mark the user's current location.
+  document.getElementById("btn-geolocate").addEventListener("click", () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const pos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+          // Remove previous user marker if it exists.
+          if (userMarker) {
+            userMarker.setMap(null);
+          }
+          // Create an image element as a DOM Node for the content.
+          const img = document.createElement("img");
+          img.src = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
+          img.alt = "Your Location";
+          userMarker = new google.maps.marker.AdvancedMarkerElement({
+            position: pos,
+            map: map,
+            title: "Your Location",
+            content: img
+          });
+          map.setCenter(pos);
+        },
+        () => handleLocationError(true, map.getCenter())
+      );
+    } else {
+      handleLocationError(false, map.getCenter());
+    }
+  });
+
+  // Form to add a new marker.
   document.getElementById("markerForm").addEventListener("submit", function(e) {
     e.preventDefault();
     const address = document.getElementById("address").value;
     const name = document.getElementById("name").value;
     const category = document.getElementById("category").value;
     const description = document.getElementById("description").value;
-    // Use Geocoder to get coordinates from the address.
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode({ address: address }, (results, status) => {
       if (status === "OK") {
@@ -168,7 +161,6 @@ function initMap() {
         };
         addMarker(newLocation);
         populateDestinationDropdown();
-        // Reset the form.
         document.getElementById("markerForm").reset();
       } else {
         alert("Geocode was not successful for the following reason: " + status);
@@ -202,103 +194,53 @@ function initMap() {
     });
   });
 }
-// Function to add a marker to the map.
+
 function addMarker(location) {
-    // Use the current markers array length as the marker's index.
-    const index = markers.length;
-    const marker = new google.maps.marker.AdvancedMarkerElement({
-      position: location.position,
-      map: map,
-      title: location.name,
-      category: location.category,
-      infoContent:
-        '<div>' +
-        '<strong>' + location.name + '</strong><br>' +
-        'Address: ' + location.address + '<br>' +
-        'Description: ' + location.description + '<br>' +
-        // A button within the info window to get directions.
-        '<button class="btn btn-sm btn-warning" onclick="getDirections(' + index + ')">Get Directions</button>' +
-        '</div>'
-    });
-    marker.addListener("click", () => {
-      infoWindow.setContent(marker.infoContent);
-      infoWindow.open(map, marker);
-    });
-    markers.push(marker);
-  }
-  
-  // Filter markers by category.
-  function filterMarkers(category) {
-    markers.forEach(marker => {
-      if (category === "All" || marker.category === category) {
-        marker.setMap(map);
-      } else {
-        marker.setMap(null);
-      }
-    });
-  }
-  
-  // Populate the destination dropdown with current markers.
-  function populateDestinationDropdown() {
-    const select = document.getElementById("destinations");
-    select.innerHTML = '<option value="">Select destination</option>';
-    markers.forEach((marker, index) => {
-      const option = document.createElement("option");
-      option.value = index;
-      option.text = marker.title;
-      select.appendChild(option);
-    });
-  }
-  // Function to add a marker to the map.
-  function addMarker(location) {
-    const index = markers.length;
-    // Create the marker using only supported options.
-    const marker = new google.maps.marker.AdvancedMarkerElement({
-      position: location.position,
-      map: map,
-      title: location.name
-    });
-    // Now attach custom properties.
-    marker.category = location.category;
-    marker.infoContent =
-      '<div>' +
+  const index = markers.length;
+  // Create the marker with supported options.
+  const marker = new google.maps.marker.AdvancedMarkerElement({
+    position: location.position,
+    map: map,
+    title: location.name
+  });
+  // Attach custom properties.
+  marker.category = location.category;
+  marker.infoContent = 
+    '<div>' +
       '<strong>' + location.name + '</strong><br>' +
       'Address: ' + location.address + '<br>' +
       'Description: ' + location.description + '<br>' +
-      // Button for getting directions.
       '<button class="btn btn-sm btn-warning" onclick="getDirections(' + index + ')">Get Directions</button>' +
-      '</div>';
-  
-    marker.addListener("click", () => {
-      infoWindow.setContent(marker.infoContent);
-      infoWindow.open(map, marker);
-    });
-    markers.push(marker);
-  }
-  
-  // Filter markers by category.
-  function filterMarkers(category) {
-    markers.forEach(marker => {
-      if (category === "All" || marker.category === category) {
-        marker.setMap(map);
-      } else {
-        marker.setMap(null);
-      }
-    });
-  }
-  
-  // Populate the destination dropdown with current markers.
-  function populateDestinationDropdown() {
-    const select = document.getElementById("destinations");
-    select.innerHTML = '<option value="">Select destination</option>';
-    markers.forEach((marker, index) => {
-      const option = document.createElement("option");
-      option.value = index;
-      option.text = marker.title;
-      select.appendChild(option);
-    });
-  }
-  // Get directions from the user's location to the specified marker.
+    '</div>';
+
+  marker.addListener("click", () => {
+    infoWindow.setContent(marker.infoContent);
+    infoWindow.open(map, marker);
+  });
+  markers.push(marker);
+}
+
+function filterMarkers(category) {
+  markers.forEach(marker => {
+    if (category === "All" || marker.category === category) {
+      marker.setMap(map);
+    } else {
+      marker.setMap(null);
+    }
+  });
+}
+
+function populateDestinationDropdown() {
+  const select = document.getElementById("destinations");
+  select.innerHTML = '<option value="">Select destination</option>';
+  markers.forEach((marker, index) => {
+    const option = document.createElement("option");
+    option.value = index;
+    option.text = marker.title;
+    select.appendChild(option);
+  });
+}
+
 function getDirections(markerIndex) {
   if (!userMarker) {
     alert("Please set your location first using the 'Find My Location' button.");
@@ -319,14 +261,10 @@ function getDirections(markerIndex) {
   });
 }
 
-// Handle geolocation errors.
 function handleLocationError(browserHasGeolocation, pos) {
   infoWindow.setPosition(pos);
-  infoWindow.setContent(
-    browserHasGeolocation
-      ? "Error: The Geolocation service failed."
-      : "Error: Your browser doesn't support geolocation."
-  );
+  infoWindow.setContent(browserHasGeolocation ?
+    "Error: The Geolocation service failed." :
+    "Error: Your browser doesn't support geolocation.");
   infoWindow.open(map);
 }
-
