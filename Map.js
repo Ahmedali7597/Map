@@ -1,3 +1,4 @@
+// Global variables for map, markers, info window, user marker, and directions services.
 let map;
 let markers = [];
 let infoWindow;
@@ -5,7 +6,7 @@ let userMarker = null;
 let directionsService;
 let directionsRenderer;
 
-// 10 markers with various categories
+// Array of 10 sample locations with various categories.
 const locations = [
   {
     name: "Central Park",
@@ -79,8 +80,13 @@ const locations = [
   }
 ];
 
-function initMap() {
-  // Initialize the map. Replace 'YOUR_VALID_MAP_ID' with an actual Map ID from your Google Cloud Console.
+/**
+ * MysteryInitMap
+ * Initializes the Google Map, sets up the directions services,
+ * adds markers to the map, and configures UI event listeners.
+ */
+function MysteryInitMap() {
+  // Initialize the map using a valid Map ID from your Google Cloud Console.
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 43.2557, lng: -79.8711 },
     zoom: 13,
@@ -94,22 +100,22 @@ function initMap() {
   directionsRenderer.setMap(map);
   directionsRenderer.setPanel(document.getElementById("directions-panel"));
 
-  // Add sample markers.
+  // Add sample markers for each location.
   locations.forEach(location => {
-    addMarker(location);
+    MysteryAddMarker(location);
   });
 
-  // Populate the destination dropdown.
-  populateDestinationDropdown();
+  // Populate the dropdown for selecting a destination.
+  MysteryPopulateDestinationDropdown();
 
-  // Set up filtering buttons.
-  document.getElementById("btn-all").addEventListener("click", () => filterMarkers("All"));
-  document.getElementById("btn-park").addEventListener("click", () => filterMarkers("Park"));
-  document.getElementById("btn-museum").addEventListener("click", () => filterMarkers("Museum"));
-  document.getElementById("btn-historic").addEventListener("click", () => filterMarkers("Historic"));
-  document.getElementById("btn-attraction").addEventListener("click", () => filterMarkers("Attraction"));
+  // Set up category filter buttons.
+  document.getElementById("btn-all").addEventListener("click", () => MysteryFilterMarkers("All"));
+  document.getElementById("btn-park").addEventListener("click", () => MysteryFilterMarkers("Park"));
+  document.getElementById("btn-museum").addEventListener("click", () => MysteryFilterMarkers("Museum"));
+  document.getElementById("btn-historic").addEventListener("click", () => MysteryFilterMarkers("Historic"));
+  document.getElementById("btn-attraction").addEventListener("click", () => MysteryFilterMarkers("Attraction"));
 
-  // Geolocation: Find and mark the user's current location.
+  // Set up geolocation to mark the user's current location.
   document.getElementById("btn-geolocate").addEventListener("click", () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -118,11 +124,11 @@ function initMap() {
             lat: position.coords.latitude,
             lng: position.coords.longitude
           };
-          // Remove previous user marker if it exists.
+          // Remove previous user marker if one exists.
           if (userMarker) {
             userMarker.setMap(null);
           }
-          // Create an image element as a DOM Node for the content.
+          // Create an image element to represent the user's location.
           const img = document.createElement("img");
           img.src = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
           img.alt = "Your Location";
@@ -134,14 +140,14 @@ function initMap() {
           });
           map.setCenter(pos);
         },
-        () => handleLocationError(true, map.getCenter())
+        () => MysteryHandleLocationError(true, map.getCenter())
       );
     } else {
-      handleLocationError(false, map.getCenter());
+      MysteryHandleLocationError(false, map.getCenter());
     }
   });
 
-  // Form to add a new marker.
+  // Event listener for the form used to add new markers.
   document.getElementById("markerForm").addEventListener("submit", function(e) {
     e.preventDefault();
     const address = document.getElementById("address").value;
@@ -149,6 +155,7 @@ function initMap() {
     const category = document.getElementById("category").value;
     const description = document.getElementById("description").value;
     const geocoder = new google.maps.Geocoder();
+    // Geocode the provided address.
     geocoder.geocode({ address: address }, (results, status) => {
       if (status === "OK") {
         const location = results[0].geometry.location;
@@ -159,8 +166,8 @@ function initMap() {
           description: description,
           position: { lat: location.lat(), lng: location.lng() }
         };
-        addMarker(newLocation);
-        populateDestinationDropdown();
+        MysteryAddMarker(newLocation);
+        MysteryPopulateDestinationDropdown();
         document.getElementById("markerForm").reset();
       } else {
         alert("Geocode was not successful for the following reason: " + status);
@@ -168,7 +175,7 @@ function initMap() {
     });
   });
 
-  // Get directions using the dropdown selection.
+  // Event listener for the directions button to get route details.
   document.getElementById("btn-directions").addEventListener("click", () => {
     if (!userMarker) {
       alert("Please set your location first using the 'Find My Location' button.");
@@ -195,24 +202,31 @@ function initMap() {
   });
 }
 
-function addMarker(location) {
+/**
+ * MysteryAddMarker
+ * Adds a new marker on the map for a given location.
+ * Also sets up an info window and a button for directions.
+ */
+function MysteryAddMarker(location) {
   const index = markers.length;
-  // Create the marker with supported options.
+  // Create a new AdvancedMarkerElement with the provided location.
   const marker = new google.maps.marker.AdvancedMarkerElement({
     position: location.position,
     map: map,
     title: location.name
   });
-  // Attach custom properties.
+  // Attach additional properties to the marker.
   marker.category = location.category;
   marker.infoContent = 
     '<div>' +
       '<strong>' + location.name + '</strong><br>' +
       'Address: ' + location.address + '<br>' +
       'Description: ' + location.description + '<br>' +
-      '<button class="btn btn-sm btn-warning" onclick="getDirections(' + index + ')">Get Directions</button>' +
+      // The button calls MysteryGetDirections with the current marker index.
+      '<button class="btn btn-sm btn-warning" onclick="MysteryGetDirections(' + index + ')">Get Directions</button>' +
     '</div>';
 
+  // Add a click listener to display the info window when the marker is clicked.
   marker.addListener("click", () => {
     infoWindow.setContent(marker.infoContent);
     infoWindow.open(map, marker);
@@ -220,7 +234,11 @@ function addMarker(location) {
   markers.push(marker);
 }
 
-function filterMarkers(category) {
+/**
+ * MysteryFilterMarkers
+ * Shows or hides markers based on the selected category.
+ */
+function MysteryFilterMarkers(category) {
   markers.forEach(marker => {
     if (category === "All" || marker.category === category) {
       marker.setMap(map);
@@ -230,7 +248,11 @@ function filterMarkers(category) {
   });
 }
 
-function populateDestinationDropdown() {
+/**
+ * MysteryPopulateDestinationDropdown
+ * Fills the dropdown with marker options for the user to choose a destination.
+ */
+function MysteryPopulateDestinationDropdown() {
   const select = document.getElementById("destinations");
   select.innerHTML = '<option value="">Select destination</option>';
   markers.forEach((marker, index) => {
@@ -241,7 +263,12 @@ function populateDestinationDropdown() {
   });
 }
 
-function getDirections(markerIndex) {
+/**
+ * MysteryGetDirections
+ * Requests and displays driving directions from the user's current location
+ * to the selected marker's location.
+ */
+function MysteryGetDirections(markerIndex) {
   if (!userMarker) {
     alert("Please set your location first using the 'Find My Location' button.");
     return;
@@ -261,7 +288,11 @@ function getDirections(markerIndex) {
   });
 }
 
-function handleLocationError(browserHasGeolocation, pos) {
+/**
+ * MysteryHandleLocationError
+ * Displays an error message when geolocation fails or is not supported.
+ */
+function MysteryHandleLocationError(browserHasGeolocation, pos) {
   infoWindow.setPosition(pos);
   infoWindow.setContent(browserHasGeolocation ?
     "Error: The Geolocation service failed." :
