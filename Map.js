@@ -147,3 +147,58 @@ function initMap() {
           handleLocationError(false, map.getCenter());
         }
       });
+      // Form to add new marker.
+  document.getElementById("markerForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const address = document.getElementById("address").value;
+    const name = document.getElementById("name").value;
+    const category = document.getElementById("category").value;
+    const description = document.getElementById("description").value;
+    // Use Geocoder to get coordinates from the address.
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({ address: address }, (results, status) => {
+      if (status === "OK") {
+        const location = results[0].geometry.location;
+        const newLocation = {
+          name: name,
+          address: address,
+          category: category,
+          description: description,
+          position: { lat: location.lat(), lng: location.lng() }
+        };
+        addMarker(newLocation);
+        populateDestinationDropdown();
+        // Reset the form.
+        document.getElementById("markerForm").reset();
+      } else {
+        alert("Geocode was not successful for the following reason: " + status);
+      }
+    });
+  });
+
+  // Get directions using the dropdown selection.
+  document.getElementById("btn-directions").addEventListener("click", () => {
+    if (!userMarker) {
+      alert("Please set your location first using the 'Find My Location' button.");
+      return;
+    }
+    const destIndex = document.getElementById("destinations").value;
+    if (destIndex === "") {
+      alert("Please select a destination.");
+      return;
+    }
+    const destination = markers[destIndex].getPosition();
+    const request = {
+      origin: userMarker.getPosition(),
+      destination: destination,
+      travelMode: "DRIVING"
+    };
+    directionsService.route(request, (result, status) => {
+      if (status === "OK") {
+        directionsRenderer.setDirections(result);
+      } else {
+        alert("Directions request failed due to " + status);
+      }
+    });
+  });
+}
