@@ -296,4 +296,35 @@ function addMarker(location) {
       select.appendChild(option);
     });
   }
+  // Get directions from the user's location to the specified marker.
+function getDirections(markerIndex) {
+    if (!userMarker) {
+      alert("Please set your location first using the 'Find My Location' button.");
+      return;
+    }
+    const destination = markers[markerIndex].getPosition();
+    const request = {
+      origin: userMarker.getPosition(),
+      destination: destination,
+      travelMode: "DRIVING"
+    };
+    directionsService.route(request, (result, status) => {
+      if (status === "OK") {
+        directionsRenderer.setDirections(result);
+      } else {
+        alert("Directions request failed due to " + status);
+      }
+    });
+  }
+  
+  // Handle geolocation errors.
+  function handleLocationError(browserHasGeolocation, pos) {
+    infoWindow.setPosition(pos);
+    infoWindow.setContent(
+      browserHasGeolocation
+        ? "Error: The Geolocation service failed."
+        : "Error: Your browser doesn't support geolocation."
+    );
+    infoWindow.open(map);
+  }
   
