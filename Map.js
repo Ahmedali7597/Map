@@ -130,7 +130,7 @@ function initMap() {
               if (userMarker) {
                 userMarker.setMap(null);
               }
-              userMarker = new google.maps.Marker({
+              userMarker = new google.maps.marker.AdvancedMarkerElement({
                 position: pos,
                 map: map,
                 title: "Your Location",
@@ -206,7 +206,7 @@ function initMap() {
 function addMarker(location) {
     // Use the current markers array length as the marker's index.
     const index = markers.length;
-    const marker = new google.maps.Marker({
+    const marker = new google.maps.marker.AdvancedMarkerElement({
       position: location.position,
       map: map,
       title: location.name,
@@ -253,7 +253,7 @@ function addMarker(location) {
 function addMarker(location) {
     // Use the current markers array length as the marker's index.
     const index = markers.length;
-    const marker = new google.maps.Marker({
+    const marker = new google.maps.marker.AdvancedMarkerElement({
       position: location.position,
       map: map,
       title: location.name,
