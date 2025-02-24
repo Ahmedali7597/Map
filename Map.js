@@ -202,3 +202,98 @@ function initMap() {
     });
   });
 }
+// Function to add a marker to the map.
+function addMarker(location) {
+    // Use the current markers array length as the marker's index.
+    const index = markers.length;
+    const marker = new google.maps.Marker({
+      position: location.position,
+      map: map,
+      title: location.name,
+      category: location.category,
+      infoContent:
+        '<div>' +
+        '<strong>' + location.name + '</strong><br>' +
+        'Address: ' + location.address + '<br>' +
+        'Description: ' + location.description + '<br>' +
+        // A button within the info window to get directions.
+        '<button class="btn btn-sm btn-warning" onclick="getDirections(' + index + ')">Get Directions</button>' +
+        '</div>'
+    });
+    marker.addListener("click", () => {
+      infoWindow.setContent(marker.infoContent);
+      infoWindow.open(map, marker);
+    });
+    markers.push(marker);
+  }
+  
+  // Filter markers by category.
+  function filterMarkers(category) {
+    markers.forEach(marker => {
+      if (category === "All" || marker.category === category) {
+        marker.setMap(map);
+      } else {
+        marker.setMap(null);
+      }
+    });
+  }
+  
+  // Populate the destination dropdown with current markers.
+  function populateDestinationDropdown() {
+    const select = document.getElementById("destinations");
+    select.innerHTML = '<option value="">Select destination</option>';
+    markers.forEach((marker, index) => {
+      const option = document.createElement("option");
+      option.value = index;
+      option.text = marker.getTitle();
+      select.appendChild(option);
+    });
+  }
+  // Function to add a marker to the map.
+function addMarker(location) {
+    // Use the current markers array length as the marker's index.
+    const index = markers.length;
+    const marker = new google.maps.Marker({
+      position: location.position,
+      map: map,
+      title: location.name,
+      category: location.category,
+      infoContent:
+        '<div>' +
+        '<strong>' + location.name + '</strong><br>' +
+        'Address: ' + location.address + '<br>' +
+        'Description: ' + location.description + '<br>' +
+        // A button within the info window to get directions.
+        '<button class="btn btn-sm btn-warning" onclick="getDirections(' + index + ')">Get Directions</button>' +
+        '</div>'
+    });
+    marker.addListener("click", () => {
+      infoWindow.setContent(marker.infoContent);
+      infoWindow.open(map, marker);
+    });
+    markers.push(marker);
+  }
+  
+  // Filter markers by category.
+  function filterMarkers(category) {
+    markers.forEach(marker => {
+      if (category === "All" || marker.category === category) {
+        marker.setMap(map);
+      } else {
+        marker.setMap(null);
+      }
+    });
+  }
+  
+  // Populate the destination dropdown with current markers.
+  function populateDestinationDropdown() {
+    const select = document.getElementById("destinations");
+    select.innerHTML = '<option value="">Select destination</option>';
+    markers.forEach((marker, index) => {
+      const option = document.createElement("option");
+      option.value = index;
+      option.text = marker.getTitle();
+      select.appendChild(option);
+    });
+  }
+  
