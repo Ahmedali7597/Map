@@ -250,23 +250,25 @@ function addMarker(location) {
     });
   }
   // Function to add a marker to the map.
-function addMarker(location) {
-    // Use the current markers array length as the marker's index.
+  function addMarker(location) {
     const index = markers.length;
+    // Create the marker using only supported options.
     const marker = new google.maps.marker.AdvancedMarkerElement({
       position: location.position,
       map: map,
-      title: location.name,
-      category: location.category,
-      infoContent:
-        '<div>' +
-        '<strong>' + location.name + '</strong><br>' +
-        'Address: ' + location.address + '<br>' +
-        'Description: ' + location.description + '<br>' +
-        // A button within the info window to get directions.
-        '<button class="btn btn-sm btn-warning" onclick="getDirections(' + index + ')">Get Directions</button>' +
-        '</div>'
+      title: location.name
     });
+    // Now attach custom properties.
+    marker.category = location.category;
+    marker.infoContent =
+      '<div>' +
+      '<strong>' + location.name + '</strong><br>' +
+      'Address: ' + location.address + '<br>' +
+      'Description: ' + location.description + '<br>' +
+      // Button for getting directions.
+      '<button class="btn btn-sm btn-warning" onclick="getDirections(' + index + ')">Get Directions</button>' +
+      '</div>';
+  
     marker.addListener("click", () => {
       infoWindow.setContent(marker.infoContent);
       infoWindow.open(map, marker);
@@ -298,33 +300,33 @@ function addMarker(location) {
   }
   // Get directions from the user's location to the specified marker.
 function getDirections(markerIndex) {
-    if (!userMarker) {
-      alert("Please set your location first using the 'Find My Location' button.");
-      return;
+  if (!userMarker) {
+    alert("Please set your location first using the 'Find My Location' button.");
+    return;
+  }
+  const destination = markers[markerIndex].getPosition();
+  const request = {
+    origin: userMarker.getPosition(),
+    destination: destination,
+    travelMode: "DRIVING"
+  };
+  directionsService.route(request, (result, status) => {
+    if (status === "OK") {
+      directionsRenderer.setDirections(result);
+    } else {
+      alert("Directions request failed due to " + status);
     }
-    const destination = markers[markerIndex].getPosition();
-    const request = {
-      origin: userMarker.getPosition(),
-      destination: destination,
-      travelMode: "DRIVING"
-    };
-    directionsService.route(request, (result, status) => {
-      if (status === "OK") {
-        directionsRenderer.setDirections(result);
-      } else {
-        alert("Directions request failed due to " + status);
-      }
-    });
-  }
-  
-  // Handle geolocation errors.
-  function handleLocationError(browserHasGeolocation, pos) {
-    infoWindow.setPosition(pos);
-    infoWindow.setContent(
-      browserHasGeolocation
-        ? "Error: The Geolocation service failed."
-        : "Error: Your browser doesn't support geolocation."
-    );
-    infoWindow.open(map);
-  }
-  
+  });
+}
+
+// Handle geolocation errors.
+function handleLocationError(browserHasGeolocation, pos) {
+  infoWindow.setPosition(pos);
+  infoWindow.setContent(
+    browserHasGeolocation
+      ? "Error: The Geolocation service failed."
+      : "Error: Your browser doesn't support geolocation."
+  );
+  infoWindow.open(map);
+}
+
