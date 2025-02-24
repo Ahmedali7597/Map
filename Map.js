@@ -245,7 +245,7 @@ function addMarker(location) {
     markers.forEach((marker, index) => {
       const option = document.createElement("option");
       option.value = index;
-      option.text = marker.getTitle();
+      option.text = marker.title;
       select.appendChild(option);
     });
   }
@@ -294,7 +294,7 @@ function addMarker(location) {
     markers.forEach((marker, index) => {
       const option = document.createElement("option");
       option.value = index;
-      option.text = marker.getTitle();
+      option.text = marker.title;
       select.appendChild(option);
     });
   }
