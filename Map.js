@@ -88,7 +88,7 @@ function MysteryInitMap() {
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 43.2557, lng: -79.8711 },
     zoom: 13,
-    mapId: "3c96fd4592614a65"
+    mapId: "3c96fd4592614a65" // Replace with your valid Map ID.
   });
   infoWindow = new google.maps.InfoWindow();
 
@@ -114,7 +114,7 @@ function MysteryInitMap() {
   document.getElementById("btn-attraction").addEventListener("click", () => MysteryFilterMarkers("Attraction"));
 
   // Set up geolocation to mark the user's current location.
-  document.getElementById("btn-geolocate").addEventListener("gmp-click", () => {
+  document.getElementById("btn-geolocate").addEventListener("click", () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -122,11 +122,11 @@ function MysteryInitMap() {
             lat: position.coords.latitude,
             lng: position.coords.longitude
           };
-          // Remove previous user marker if it exists.
+        
           if (userMarker) {
             userMarker.setMap(null);
           }
-          // Create an image element as a DOM Node for the content.
+      
           const img = document.createElement("img");
           img.src = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
           img.alt = "Your Location";
@@ -173,7 +173,7 @@ function MysteryInitMap() {
   });
 
   // Event listener for the directions button.
-  document.getElementById("btn-directions").addEventListener("gmp-click", () => {
+  document.getElementById("btn-directions").addEventListener("click", () => {
     if (!userMarker) {
       alert("Please set your location first using the 'Find My Location' button.");
       return;
@@ -183,19 +183,7 @@ function MysteryInitMap() {
       alert("Please select a destination.");
       return;
     }
-    const destination = markers[destIndex].getPosition();
-    const request = {
-      origin: userMarker.getPosition(),
-      destination: destination,
-      travelMode: "DRIVING"
-    };
-    directionsService.route(request, (result, status) => {
-      if (status === "OK") {
-        directionsRenderer.setDirections(result);
-      } else {
-        alert("Directions request failed due to " + status);
-      }
-    });
+    MysteryGetDirections(destIndex);
   });
 }
 
@@ -205,23 +193,19 @@ function MysteryInitMap() {
  */
 function MysteryAddMarker(location) {
   const index = markers.length;
-  // Create the marker using AdvancedMarkerElement.
   const marker = new google.maps.marker.AdvancedMarkerElement({
     position: location.position,
     map: map,
     title: location.name
   });
-  // Attach custom properties.
   marker.category = location.category;
-  marker.infoContent = 
+  marker.infoContent =
     '<div>' +
       '<strong>' + location.name + '</strong><br>' +
       'Address: ' + location.address + '<br>' +
       'Description: ' + location.description + '<br>' +
       '<button class="btn btn-sm btn-warning" onclick="MysteryGetDirections(' + index + ')">Get Directions</button>' +
     '</div>';
-
-  // Use the recommended "gmp-click" event.
   marker.addListener("gmp-click", () => {
     infoWindow.setContent(marker.infoContent);
     infoWindow.open(map, marker);
@@ -267,9 +251,9 @@ function MysteryGetDirections(markerIndex) {
     alert("Please set your location first using the 'Find My Location' button.");
     return;
   }
-  const destination = markers[markerIndex].getPosition();
+  const destination = markers[markerIndex].position;
   const request = {
-    origin: userMarker.getPosition(),
+    origin: userMarker.position,
     destination: destination,
     travelMode: "DRIVING"
   };
