@@ -108,10 +108,10 @@ function MysteryInitMap() {
 
   // Set up category filter buttons.
   document.getElementById("btn-all").addEventListener("click", () => MysteryFilterMarkers("All"));
-  document.getElementById("btn-park").addEventListener("gmp-click", () => MysteryFilterMarkers("Park"));
-  document.getElementById("btn-museum").addEventListener("gmp-click", () => MysteryFilterMarkers("Museum"));
-  document.getElementById("btn-historic").addEventListener("gmp-click", () => MysteryFilterMarkers("Historic"));
-  document.getElementById("btn-attraction").addEventListener("gmp-click", () => MysteryFilterMarkers("Attraction"));
+  document.getElementById("btn-park").addEventListener("click", () => MysteryFilterMarkers("Park"));
+  document.getElementById("btn-museum").addEventListener("click", () => MysteryFilterMarkers("Museum"));
+  document.getElementById("btn-historic").addEventListener("click", () => MysteryFilterMarkers("Historic"));
+  document.getElementById("btn-attraction").addEventListener("click", () => MysteryFilterMarkers("Attraction"));
 
   // Set up geolocation to mark the user's current location.
   document.getElementById("btn-geolocate").addEventListener("gmp-click", () => {
