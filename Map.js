@@ -14,18 +14,18 @@ let directionsRenderer;
 // Array of 10 sample locations with various categories.
 const locations = [
   {
-    name: "Central Park",
-    address: "Central Park, Hamilton",
-    category: "Park",
-    description: "A beautiful park in the heart of Hamilton.",
-    position: { lat: 43.2557, lng: -79.8711 }
+    name: "Dundurn Castle",
+    address: "610 York Blvd, Hamilton, ON L8R 3E7",
+    category: "Historic",
+    description: "A beautiful Castle in Hamilton.",
+    position: { lat: 43.26978766808976, lng: -79.88362999268274 }
   },
   {
-    name: "Heritage Museum",
-    address: "Heritage Museum, Hamilton",
+    name: "Workers Arts & Heritage Centre",
+    address: "51 Stuart St, Hamilton, ON L8L 1B5",
     category: "Museum",
     description: "A museum showcasing local history.",
-    position: { lat: 43.2560, lng: -79.8690 }
+    position: { lat: 43.26666225937804, lng: -79.86659800456955 }
   },
   {
     name: "Historic Fort",
@@ -95,7 +95,7 @@ function MysteryInitMap() {
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 43.2557, lng: -79.8711 },
     zoom: 13,
-    mapId: "YOUR_VALID_MAP_ID"
+    mapId: ""
   });
   infoWindow = new google.maps.InfoWindow();
 
