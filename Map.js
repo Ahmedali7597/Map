@@ -2,7 +2,6 @@
 *"StAuth10244: I Ahmed Ali, 000824753 certify that this material is my original work. No other person's work has been used without due acknowledgement. I have not made my work available to anyone else."
 */
 
-
 // Global variables for map, markers, info window, user marker, and directions services.
 let map;
 let markers = [];
@@ -11,7 +10,7 @@ let userMarker = null;
 let directionsService;
 let directionsRenderer;
 
-// Array of 10 sample locations with various categories.
+// Updated locations using real Hamilton, Ontario landmarks.
 const locations = [
   {
     name: "Dundurn Castle",
@@ -23,65 +22,67 @@ const locations = [
   {
     name: "Workers Arts & Heritage Centre",
     address: "51 Stuart St, Hamilton, ON L8L 1B5",
+    name: "Workers Arts & Heritage Centre",
+    address: "51 Stuart St, Hamilton, ON L8L 1B5",
     category: "Museum",
     description: "A museum showcasing local history.",
     position: { lat: 43.26666225937804, lng: -79.86659800456955 }
   },
   {
-    name: "Historic Fort",
-    address: "Fort George, Hamilton",
+    name: "HMCS Haida National Historic Site",
+    address: "145 York Blvd, Hamilton, ON L8R 1B3",
     category: "Historic",
-    description: "A historic fort site with guided tours.",
-    position: { lat: 43.2570, lng: -79.8720 }
+    description: "A museum ship and a National Historic Site.",
+    position: { lat: 43.2592, lng: -79.8840 }
   },
   {
-    name: "Art Gallery",
-    address: "Art Gallery, Hamilton",
+    name: "Art Gallery of Hamilton",
+    address: "123 King St W, Hamilton, ON L8P 1A1",
     category: "Attraction",
-    description: "A vibrant local art gallery.",
-    position: { lat: 43.2540, lng: -79.8700 }
+    description: "A vibrant art gallery showcasing contemporary and historical art.",
+    position: { lat: 43.2569, lng: -79.8621 }
   },
   {
-    name: "Botanical Gardens",
-    address: "Botanical Gardens, Hamilton",
+    name: "Bayfront Park",
+    address: "Bayfront Park, Hamilton, ON",
     category: "Park",
-    description: "Expansive gardens featuring rare plants.",
-    position: { lat: 43.2530, lng: -79.8680 }
+    description: "A scenic park along Hamilton’s waterfront.",
+    position: { lat: 43.2557, lng: -79.8657 }
   },
   {
-    name: "Science Centre",
-    address: "Science Centre, Hamilton",
+    name: "Canadian Warplane Heritage Museum",
+    address: "100 Longwood Rd, Hamilton, ON L8E 1J7",
     category: "Museum",
-    description: "An interactive science centre for all ages.",
-    position: { lat: 43.2580, lng: -79.8730 }
+    description: "A museum showcasing historic aircraft and warplanes.",
+    position: { lat: 43.2349, lng: -79.8886 }
   },
   {
-    name: "Old Town Square",
-    address: "Old Town, Hamilton",
+    name: "Hamilton Waterfront",
+    address: "Hamilton Harbour, Hamilton, ON",
     category: "Historic",
-    description: "Historic downtown area with charming architecture.",
-    position: { lat: 43.2520, lng: -79.8670 }
+    description: "The revitalized historic waterfront district of Hamilton.",
+    position: { lat: 43.2555, lng: -79.8600 }
   },
   {
-    name: "City Zoo",
-    address: "City Zoo, Hamilton",
-    category: "Attraction",
-    description: "A popular local zoo with various animal exhibits.",
-    position: { lat: 43.2510, lng: -79.8660 }
-  },
-  {
-    name: "River Park",
-    address: "River Park, Hamilton",
+    name: "Lemoine Point Park",
+    address: "Lemoine Point, Hamilton, ON",
     category: "Park",
-    description: "A scenic park by the river.",
-    position: { lat: 43.2500, lng: -79.8650 }
+    description: "A beautiful park with walking trails along Hamilton Harbour.",
+    position: { lat: 43.2632, lng: -79.8657 }
   },
   {
-    name: "Maritime Museum",
-    address: "Maritime Museum, Hamilton",
+    name: "Gage Park",
+    address: "100 King William St, Hamilton, ON",
+    category: "Park",
+    description: "A historic park known for its gardens and conservatory.",
+    position: { lat: 43.2560, lng: -79.8700 }
+  },
+  {
+    name: "Hamilton Science Centre",
+    address: "Science Centre, Hamilton, ON",
     category: "Museum",
-    description: "A museum showcasing Hamilton's maritime history.",
-    position: { lat: 43.2590, lng: -79.8740 }
+    description: "A centre dedicated to science and technology exhibits.",
+    position: { lat: 43.2570, lng: -79.8680 }
   }
 ];
 
@@ -105,7 +106,7 @@ function initMap() {
   directionsRenderer.setMap(map);
   directionsRenderer.setPanel(document.getElementById("directions-panel"));
 
-  // Add sample markers for each location.
+  // Add sample markers.
   locations.forEach(location => {
     addMarker(location);
   });
@@ -129,11 +130,11 @@ function initMap() {
             lat: position.coords.latitude,
             lng: position.coords.longitude
           };
-          // Remove previous user marker if one exists.
+        
           if (userMarker) {
             userMarker.map = null;
           }
-          // Create an image element to represent the user's location.
+      
           const img = document.createElement("img");
           img.src = "https://maps.google.com/mapfiles/ms/icons/blue-dot.png";
           img.alt = "Your Location";
@@ -152,7 +153,7 @@ function initMap() {
     }
   });
 
-  // Event listener for the form used to add new markers.
+  // Event listener for the form to add new markers.
   document.getElementById("markerForm").addEventListener("submit", function(e) {
     e.preventDefault();
     const address = document.getElementById("address").value;
@@ -160,7 +161,6 @@ function initMap() {
     const category = document.getElementById("category").value;
     const description = document.getElementById("description").value;
     const geocoder = new google.maps.Geocoder();
-    // Geocode the provided address.
     geocoder.geocode({ address: address }, (results, status) => {
       if (status === "OK") {
         const location = results[0].geometry.location;
@@ -180,7 +180,7 @@ function initMap() {
     });
   });
 
-  // Event listener for the directions button to get route details.
+  // Event listener for the directions button.
   document.getElementById("btn-directions").addEventListener("click", () => {
     if (!userMarker) {
       alert("Please set your location first using the 'Find My Location' button.");
@@ -191,19 +191,7 @@ function initMap() {
       alert("Please select a destination.");
       return;
     }
-    const destination = markers[destIndex].position;
-    const request = {
-      origin: userMarker.position,
-      destination: destination,
-      travelMode: "DRIVING"
-    };
-    directionsService.route(request, (result, status) => {
-      if (status === "OK") {
-        directionsRenderer.setDirections(result);
-      } else {
-        alert("Directions request failed due to " + status);
-      }
-    });
+    MysteryGetDirections(destIndex);
   });
 }
 
@@ -214,15 +202,13 @@ function initMap() {
  */
 function addMarker(location) {
   const index = markers.length;
-  // Create a new AdvancedMarkerElement with the provided location.
   const marker = new google.maps.marker.AdvancedMarkerElement({
     position: location.position,
     map: map,
     title: location.name
   });
-  // Attach additional properties to the marker.
   marker.category = location.category;
-  marker.infoContent = 
+  marker.infoContent =
     '<div>' +
       '<strong>' + location.name + '</strong><br>' +
       'Address: ' + location.address + '<br>' +
@@ -230,9 +216,7 @@ function addMarker(location) {
       // The button calls getDirections with the current marker index.
       '<button class="btn btn-sm btn-warning" onclick="getDirections(' + index + ')">Get Directions</button>' +
     '</div>';
-
-  // Add a click listener to display the info window when the marker is clicked.
-  marker.addListener("click", () => {
+  marker.addListener("gmp-click", () => {
     infoWindow.setContent(marker.infoContent);
     infoWindow.open({ map: map, anchor: marker });
   });
