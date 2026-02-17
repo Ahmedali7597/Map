@@ -22,8 +22,6 @@ const locations = [
   {
     name: "Workers Arts & Heritage Centre",
     address: "51 Stuart St, Hamilton, ON L8L 1B5",
-    name: "Workers Arts & Heritage Centre",
-    address: "51 Stuart St, Hamilton, ON L8L 1B5",
     category: "Museum",
     description: "A museum showcasing local history.",
     position: { lat: 43.26666225937804, lng: -79.86659800456955 }
@@ -191,7 +189,7 @@ function initMap() {
       alert("Please select a destination.");
       return;
     }
-    MysteryGetDirections(destIndex);
+    getDirections(destIndex);
   });
 }
 
