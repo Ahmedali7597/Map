@@ -14,18 +14,18 @@ let directionsRenderer;
 // Array of 10 sample locations with various categories.
 const locations = [
   {
-    name: "Central Park",
-    address: "Central Park, Hamilton",
-    category: "Park",
-    description: "A beautiful park in the heart of Hamilton.",
-    position: { lat: 43.2557, lng: -79.8711 }
+    name: "Dundurn Castle",
+    address: "610 York Blvd, Hamilton, ON L8R 3E7",
+    category: "Historic",
+    description: "A beautiful Castle in Hamilton.",
+    position: { lat: 43.26978766808976, lng: -79.88362999268274 }
   },
   {
-    name: "Heritage Museum",
-    address: "Heritage Museum, Hamilton",
+    name: "Workers Arts & Heritage Centre",
+    address: "51 Stuart St, Hamilton, ON L8L 1B5",
     category: "Museum",
     description: "A museum showcasing local history.",
-    position: { lat: 43.2560, lng: -79.8690 }
+    position: { lat: 43.26666225937804, lng: -79.86659800456955 }
   },
   {
     name: "Historic Fort",
@@ -86,16 +86,16 @@ const locations = [
 ];
 
 /**
- * MysteryInitMap
+ * initMap
  * Initializes the Google Map, sets up the directions services,
  * adds markers to the map, and configures UI event listeners.
  */
-function MysteryInitMap() {
+function initMap() {
   // Initialize the map using a valid Map ID from your Google Cloud Console.
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 43.2557, lng: -79.8711 },
     zoom: 13,
-    mapId: "YOUR_VALID_MAP_ID"
+    mapId: "DEMO_MAP_ID"
   });
   infoWindow = new google.maps.InfoWindow();
 
@@ -107,18 +107,18 @@ function MysteryInitMap() {
 
   // Add sample markers for each location.
   locations.forEach(location => {
-    MysteryAddMarker(location);
+    addMarker(location);
   });
 
   // Populate the dropdown for selecting a destination.
-  MysteryPopulateDestinationDropdown();
+  populateDestinationDropdown();
 
   // Set up category filter buttons.
-  document.getElementById("btn-all").addEventListener("click", () => MysteryFilterMarkers("All"));
-  document.getElementById("btn-park").addEventListener("click", () => MysteryFilterMarkers("Park"));
-  document.getElementById("btn-museum").addEventListener("click", () => MysteryFilterMarkers("Museum"));
-  document.getElementById("btn-historic").addEventListener("click", () => MysteryFilterMarkers("Historic"));
-  document.getElementById("btn-attraction").addEventListener("click", () => MysteryFilterMarkers("Attraction"));
+  document.getElementById("btn-all").addEventListener("click", () => filterMarkers("All"));
+  document.getElementById("btn-park").addEventListener("click", () => filterMarkers("Park"));
+  document.getElementById("btn-museum").addEventListener("click", () => filterMarkers("Museum"));
+  document.getElementById("btn-historic").addEventListener("click", () => filterMarkers("Historic"));
+  document.getElementById("btn-attraction").addEventListener("click", () => filterMarkers("Attraction"));
 
   // Set up geolocation to mark the user's current location.
   document.getElementById("btn-geolocate").addEventListener("click", () => {
@@ -131,11 +131,11 @@ function MysteryInitMap() {
           };
           // Remove previous user marker if one exists.
           if (userMarker) {
-            userMarker.setMap(null);
+            userMarker.map = null;
           }
           // Create an image element to represent the user's location.
           const img = document.createElement("img");
-          img.src = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
+          img.src = "https://maps.google.com/mapfiles/ms/icons/blue-dot.png";
           img.alt = "Your Location";
           userMarker = new google.maps.marker.AdvancedMarkerElement({
             position: pos,
@@ -145,10 +145,10 @@ function MysteryInitMap() {
           });
           map.setCenter(pos);
         },
-        () => MysteryHandleLocationError(true, map.getCenter())
+        () => handleLocationError(true, map.getCenter())
       );
     } else {
-      MysteryHandleLocationError(false, map.getCenter());
+      handleLocationError(false, map.getCenter());
     }
   });
 
@@ -171,8 +171,8 @@ function MysteryInitMap() {
           description: description,
           position: { lat: location.lat(), lng: location.lng() }
         };
-        MysteryAddMarker(newLocation);
-        MysteryPopulateDestinationDropdown();
+        addMarker(newLocation);
+        populateDestinationDropdown();
         document.getElementById("markerForm").reset();
       } else {
         alert("Geocode was not successful for the following reason: " + status);
@@ -208,11 +208,11 @@ function MysteryInitMap() {
 }
 
 /**
- * MysteryAddMarker
+ * addMarker
  * Adds a new marker on the map for a given location.
  * Also sets up an info window and a button for directions.
  */
-function MysteryAddMarker(location) {
+function addMarker(location) {
   const index = markers.length;
   // Create a new AdvancedMarkerElement with the provided location.
   const marker = new google.maps.marker.AdvancedMarkerElement({
@@ -227,37 +227,37 @@ function MysteryAddMarker(location) {
       '<strong>' + location.name + '</strong><br>' +
       'Address: ' + location.address + '<br>' +
       'Description: ' + location.description + '<br>' +
-      // The button calls MysteryGetDirections with the current marker index.
-      '<button class="btn btn-sm btn-warning" onclick="MysteryGetDirections(' + index + ')">Get Directions</button>' +
+      // The button calls getDirections with the current marker index.
+      '<button class="btn btn-sm btn-warning" onclick="getDirections(' + index + ')">Get Directions</button>' +
     '</div>';
 
   // Add a click listener to display the info window when the marker is clicked.
   marker.addListener("click", () => {
     infoWindow.setContent(marker.infoContent);
-    infoWindow.open(map, marker);
+    infoWindow.open({ map: map, anchor: marker });
   });
   markers.push(marker);
 }
 
 /**
- * MysteryFilterMarkers
+ * filterMarkers
  * Shows or hides markers based on the selected category.
  */
-function MysteryFilterMarkers(category) {
+function filterMarkers(category) {
   markers.forEach(marker => {
     if (category === "All" || marker.category === category) {
-      marker.setMap(map);
+      marker.map = map;
     } else {
-      marker.setMap(null);
+      marker.map = null;
     }
   });
 }
 
 /**
- * MysteryPopulateDestinationDropdown
+ * populateDestinationDropdown
  * Fills the dropdown with marker options for the user to choose a destination.
  */
-function MysteryPopulateDestinationDropdown() {
+function populateDestinationDropdown() {
   const select = document.getElementById("destinations");
   select.innerHTML = '<option value="">Select destination</option>';
   markers.forEach((marker, index) => {
@@ -269,11 +269,11 @@ function MysteryPopulateDestinationDropdown() {
 }
 
 /**
- * MysteryGetDirections
+ * getDirections
  * Requests and displays driving directions from the user's current location
  * to the selected marker's location.
  */
-function MysteryGetDirections(markerIndex) {
+function getDirections(markerIndex) {
   if (!userMarker) {
     alert("Please set your location first using the 'Find My Location' button.");
     return;
@@ -294,10 +294,10 @@ function MysteryGetDirections(markerIndex) {
 }
 
 /**
- * MysteryHandleLocationError
+ * handleLocationError
  * Displays an error message when geolocation fails or is not supported.
  */
-function MysteryHandleLocationError(browserHasGeolocation, pos) {
+function handleLocationError(browserHasGeolocation, pos) {
   infoWindow.setPosition(pos);
   infoWindow.setContent(browserHasGeolocation ?
     "Error: The Geolocation service failed." :
