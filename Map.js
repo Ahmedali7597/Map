@@ -10,77 +10,77 @@ let userMarker = null;
 let directionsService;
 let directionsRenderer;
 
-// Updated locations using real Hamilton, Ontario landmarks.
+// Hamilton-area landmarks with addresses and coordinates.
 const locations = [
   {
     name: "Dundurn Castle",
     address: "610 York Blvd, Hamilton, ON L8R 3E7",
     category: "Historic",
-    description: "A beautiful Castle in Hamilton.",
-    position: { lat: 43.26978766808976, lng: -79.88362999268274 }
+    description: "A 19th-century estate museum overlooking Hamilton Harbour.",
+    position: { lat: 43.2694696, lng: -79.8841920 }
   },
   {
     name: "Workers Arts & Heritage Centre",
     address: "51 Stuart St, Hamilton, ON L8L 1B5",
     category: "Museum",
-    description: "A museum showcasing local history.",
-    position: { lat: 43.26666225937804, lng: -79.86659800456955 }
+    description: "A museum focused on labour and working-class history.",
+    position: { lat: 43.2663648, lng: -79.8673570 }
   },
   {
     name: "HMCS Haida National Historic Site",
-    address: "145 York Blvd, Hamilton, ON L8R 1B3",
+    address: "658 Catharine St N, Hamilton, ON L8L 1J7",
     category: "Historic",
-    description: "A museum ship and a National Historic Site.",
-    position: { lat: 43.2592, lng: -79.8840 }
+    description: "Canada's most famous warship and a national historic site.",
+    position: { lat: 43.2753485, lng: -79.8562697 }
   },
   {
     name: "Art Gallery of Hamilton",
-    address: "123 King St W, Hamilton, ON L8P 1A1",
+    address: "123 King St W, Hamilton, ON L8P 4S8",
     category: "Attraction",
-    description: "A vibrant art gallery showcasing contemporary and historical art.",
-    position: { lat: 43.2569, lng: -79.8621 }
+    description: "A major public gallery featuring Canadian and international art.",
+    position: { lat: 43.2571191, lng: -79.8724936 }
   },
   {
     name: "Bayfront Park",
-    address: "Bayfront Park, Hamilton, ON",
+    address: "200 Harbour Front Dr, Hamilton, ON L8L 1C8",
     category: "Park",
-    description: "A scenic park along Hamilton’s waterfront.",
-    position: { lat: 43.2557, lng: -79.8657 }
+    description: "A waterfront park with trails, lawns, and harbour views.",
+    position: { lat: 43.2693655, lng: -79.8698371 }
   },
   {
     name: "Canadian Warplane Heritage Museum",
-    address: "100 Longwood Rd, Hamilton, ON L8E 1J7",
+    address: "9280 Airport Rd, Mount Hope, ON L0R 1W0",
     category: "Museum",
-    description: "A museum showcasing historic aircraft and warplanes.",
-    position: { lat: 43.2349, lng: -79.8886 }
-  },
-  {
-    name: "Hamilton Waterfront",
-    address: "Hamilton Harbour, Hamilton, ON",
-    category: "Historic",
-    description: "The revitalized historic waterfront district of Hamilton.",
-    position: { lat: 43.2555, lng: -79.8600 }
-  },
-  {
-    name: "Lemoine Point Park",
-    address: "Lemoine Point, Hamilton, ON",
-    category: "Park",
-    description: "A beautiful park with walking trails along Hamilton Harbour.",
-    position: { lat: 43.2632, lng: -79.8657 }
+    description: "An aviation museum with restored military and civilian aircraft.",
+    position: { lat: 43.1598348, lng: -79.9249154 }
   },
   {
     name: "Gage Park",
-    address: "100 King William St, Hamilton, ON",
+    address: "1000 Main St E, Hamilton, ON L8M 1N2",
     category: "Park",
-    description: "A historic park known for its gardens and conservatory.",
-    position: { lat: 43.2560, lng: -79.8700 }
+    description: "A large city park known for gardens and community events.",
+    position: { lat: 43.2407346, lng: -79.8290799 }
   },
   {
-    name: "Hamilton Science Centre",
-    address: "Science Centre, Hamilton, ON",
-    category: "Museum",
-    description: "A centre dedicated to science and technology exhibits.",
-    position: { lat: 43.2570, lng: -79.8680 }
+    name: "Hamilton Farmers' Market",
+    address: "35 York Blvd, Hamilton, ON L8R 3K7",
+    category: "Attraction",
+    description: "A historic market with local produce, food, and specialty vendors.",
+    position: { lat: 43.2589177, lng: -79.8701446 }
+  },
+  {
+    name: "Sam Lawrence Park",
+    address: "255 Concession St, Hamilton, ON L9A 1B2",
+    category: "Park",
+    description: "An escarpment park with panoramic views over the lower city.",
+    position: { lat: 43.2445594, lng: -79.8612476 }
+  },
+  {
+    name: "Hamilton City Hall",
+    address: "71 Main St W, Hamilton, ON L8P 1H6",
+    category: "Attraction",
+    description: "Hamilton's civic centre near downtown public squares and events.",
+    position: { lat: 43.2555070, lng: -79.8733397 }
   }
 ];
 
